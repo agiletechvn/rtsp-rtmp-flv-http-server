@@ -14,19 +14,19 @@ const logger = require("./logger");
         0x80, 0x00, 0x00, 0x00
       ]
       myBits = new Bits buf  # A Bits instance holds a cursor
-      console.log myBits.read_bit()
+      logger.log myBits.read_bit()
    * => 1
-      console.log myBits.read_bits 2
+      logger.log myBits.read_bits 2
    * => 2
       myBits.skip_bits 5
-      console.log myBits.read_byte()  # Returns a number
+      logger.log myBits.read_byte()  # Returns a number
    * => 240
-      console.log myBits.read_bytes 2  # Returns a Buffer instance
+      logger.log myBits.read_bytes 2  # Returns a Buffer instance
    * => <Buffer 7f ff>
       myBits.push_back_bytes 2  # Move the cursor two bytes back
-      console.log myBits.read_int 32
+      logger.log myBits.read_int 32
    * => 2147483647
-      console.log myBits.read_int 32
+      logger.log myBits.read_int 32
    * => -2147483648
 
    * Writer
@@ -146,7 +146,7 @@ const logger = require("./logger");
       print_position() {
         var remaining_bits;
         remaining_bits = this.get_remaining_bits();
-        return console.log(
+        return logger.log(
           `byteIndex=${this.byte_index + 1} bitIndex=${
             this.bit_index
           } remaining_bits=${remaining_bits}`
@@ -155,9 +155,9 @@ const logger = require("./logger");
 
       peek() {
         var remainingBits;
-        console.log(this.buf.slice(this.byte_index));
+        logger.log(this.buf.slice(this.byte_index));
         remainingBits = this.get_remaining_bits();
-        return console.log(
+        return logger.log(
           `bit=${this.bit_index} bytes_read=${
             this.byte_index
           } remaining=${remainingBits} bits (${Math.ceil(
@@ -264,7 +264,7 @@ const logger = require("./logger");
           if (Bits.is_warning_fatal) {
             throw new Error(errmsg);
           } else {
-            console.log(`warning: bits.read_bytes: ${errmsg}`);
+            logger.log(`warning: bits.read_bytes: ${errmsg}`);
           }
         }
         range = this.buf.slice(this.byte_index, this.byte_index + len);
@@ -511,7 +511,7 @@ const logger = require("./logger");
         var nullPos, str;
         nullPos = Bits.searchByteInBuffer(this.buf, 0x00, this.byte_index);
         if (nullPos === -1) {
-          // console.log(this.buf.toString());
+          // logger.log(this.buf.toString());
           // throw new Error("bits.get_string: the string is not null-terminated");
           logger.warn("bits.get_string: the string is not null-terminated");
           return str;
@@ -666,14 +666,14 @@ const logger = require("./logger");
           process.stdout.write(Bits.toBinary(byte));
           col++;
           if (col === 4) {
-            console.log();
+            logger.log();
             col = 0;
           } else {
             process.stdout.write(" ");
           }
         }
         if (col !== 0) {
-          return console.log();
+          return logger.log();
         }
       }
 

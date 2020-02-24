@@ -16,10 +16,10 @@
 
       obj = new MyClass
       obj.on 'testevent', (a, b, c) ->
-        console.log "received testevent a=#{a} b=#{b} c=#{c}"
+        logger.log "received testevent a=#{a} b=#{b} c=#{c}"
 
       obj.onAny (eventName, data...) ->
-        console.log "received by onAny: eventName=#{eventName} data=#{data}"
+        logger.log "received by onAny: eventName=#{eventName} data=#{data}"
 
       obj.emit 'testevent', 111, 222, 333
       obj.emit 'anotherevent', 'hello'
@@ -34,7 +34,7 @@
 
       obj = new MyClass
       obj.on 'testevent', ->
-        console.log "received testevent"
+        logger.log "received testevent"
 
       obj.emit 'testevent'
 
@@ -47,7 +47,7 @@
 
       obj = new MyClass
       obj.on 'testevent', ->
-        console.log "received testevent"
+        logger.log "received testevent"
 
       obj.emit 'testevent'
    */
@@ -59,14 +59,16 @@
       ref = Object.getOwnPropertyNames(proto);
       for (j = 0, len = ref.length; j < len; j++) {
         name = ref[j];
-        if (name === 'constructor') {
+        if (name === "constructor") {
           continue;
         }
         try {
           cls.prototype[name] = proto[name];
         } catch (error) {
           e = error;
-          throw new Error("Call EventEmitterModule.mixin() after the class definition");
+          throw new Error(
+            "Call EventEmitterModule.mixin() after the class definition"
+          );
         }
       }
     }
@@ -78,7 +80,7 @@
       ref = Object.getOwnPropertyNames(proto);
       for (j = 0, len = ref.length; j < len; j++) {
         name = ref[j];
-        if (name === 'constructor') {
+        if (name === "constructor") {
           continue;
         }
         obj[name] = proto[name];
@@ -109,7 +111,7 @@
       if (this.catchAllEventListeners != null) {
         return this.catchAllEventListeners.push(listener);
       } else {
-        return this.catchAllEventListeners = [listener];
+        return (this.catchAllEventListeners = [listener]);
       }
     }
 
@@ -120,7 +122,11 @@
         for (i = j = 0, len = ref.length; j < len; i = ++j) {
           _listener = ref[i];
           if (_listener === listener) {
-            splice.apply(this.catchAllEventListeners, [i, i - i + 1].concat(ref1 = [])), ref1;
+            splice.apply(
+              this.catchAllEventListeners,
+              [i, i - i + 1].concat((ref1 = []))
+            ),
+              ref1;
           }
         }
       }
@@ -133,7 +139,7 @@
       if (this.eventListeners[name] != null) {
         return this.eventListeners[name].push(listener);
       } else {
-        return this.eventListeners[name] = [listener];
+        return (this.eventListeners[name] = [listener]);
       }
     }
 
@@ -144,7 +150,11 @@
         for (i = j = 0, len = ref1.length; j < len; i = ++j) {
           _listener = ref1[i];
           if (_listener === listener) {
-            splice.apply(this.eventListeners, [i, i - i + 1].concat(ref2 = [])), ref2;
+            splice.apply(
+              this.eventListeners,
+              [i, i - i + 1].concat((ref2 = []))
+            ),
+              ref2;
           }
         }
       }
@@ -153,9 +163,7 @@
     off(name, listener) {
       return this.removeListener(...arguments);
     }
-
   };
 
   module.exports = EventEmitterModule;
-
-}).call(this);
+}.call(this));

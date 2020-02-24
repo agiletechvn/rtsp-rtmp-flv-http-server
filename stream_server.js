@@ -270,7 +270,7 @@
             );
           });
           mp4File.on("eof", () => {
-            console.log("mp4File = new mp4.MP4File(filename);");
+            logger.log("mp4File = new mp4.MP4File(filename);");
             return mp4Stream.emit("end");
           });
           mp4File.parse();

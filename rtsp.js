@@ -2739,7 +2739,7 @@ Cache-Control: no-cache
             client.clientType = "tcp";
             this.dumpClients();
           } else {
-            logger.info(
+            logger.debug(
               `[${TAG}:client=${client.id}] start streaming over UDP`
             );
             if (ENABLE_START_PLAYING_FROM_KEYFRAME && stream.isVideoStarted) {

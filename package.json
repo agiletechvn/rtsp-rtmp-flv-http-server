@@ -9,8 +9,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "chalk": "^3.0.0",
     "ejs": "2.5.x",
-    "sequent": ">= 0.1.2"
+    "sequent": ">= 0.1.2",
+    "v8-compile-cache": "^2.1.0"
   },
   "engines": {
     "node": ">= 6.0.0"
