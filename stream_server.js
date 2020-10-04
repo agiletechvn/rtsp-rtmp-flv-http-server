@@ -58,6 +58,8 @@
 
   Sequent = require('sequent');
 
+  const { networkInterfaces } = require('os');
+
   // If true, incoming video/audio packets are printed to the console
   DEBUG_INCOMING_PACKET_DATA = false;
 
@@ -132,11 +134,17 @@
         this.customReceiver.deleteReceiverSocketsSync();
       }
       if (config.enableHTTP) {
+        const nets = networkInterfaces();
+        const eth0 = nets['eth0'].find(
+          (net) => net.family === 'IPv4' && !net.internal
+        );
+        const serverAddress = eth0 ? eth0.address : 'localhost';
+
         this.httpHandler = new http.HTTPHandler({
           serverName: this.serverName,
           recordedDir: config.recordedDir,
-          rtspBase: `rtsp://${config.serverHost}:${config.serverPort}/${config.recordedApplicationName}`,
-          rtmpBase: `rtmp://${config.serverHost}:${config.rtmpServerPort}/${config.recordedApplicationName}`,
+          rtspBase: `rtsp://${serverAddress}:${config.serverPort}/${config.recordedApplicationName}`,
+          rtmpBase: `rtmp://${serverAddress}:${config.rtmpServerPort}/${config.recordedApplicationName}`,
           documentRoot: opts != null ? opts.documentRoot : void 0
         });
       }

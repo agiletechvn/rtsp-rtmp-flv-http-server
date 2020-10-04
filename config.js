@@ -11,7 +11,6 @@
 
     // Server listen port
     serverPort: 554,
-    serverHost: 'localhost',
     // RTMP server listen port
     rtmpServerPort: 1935,
     // Server name which will be embedded in
