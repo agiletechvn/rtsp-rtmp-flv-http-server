@@ -1,5 +1,5 @@
-const logger = require("./logger");
-(function() {
+const logger = require('./logger');
+(function () {
   // Utility for Buffer operations
   /*
    * Usage
@@ -44,12 +44,12 @@ const logger = require("./logger");
   var Bits, buffertools, e;
 
   try {
-    buffertools = require("buffertools");
+    buffertools = require('buffertools');
   } catch (error) {
     e = error;
   }
 
-  Bits = function() {
+  Bits = function () {
     // buffertools is not available
     class Bits {
       constructor(buffer) {
@@ -85,7 +85,7 @@ const logger = require("./logger");
       fill_bits_with_1(numBits) {
         var value;
         if (numBits > 32) {
-          throw new Error("numBits must be <= 32");
+          throw new Error('numBits must be <= 32');
         }
         value = Math.pow(2, numBits) - 1;
         return this.add_bits(numBits, value);
@@ -95,10 +95,10 @@ const logger = require("./logger");
       add_bits(numBits, value) {
         var available_len, remaining_len, results, this_value;
         if (value > 0xffffffff) {
-          throw new Error("value must be <= 0xffffffff (uint32)");
+          throw new Error('value must be <= 0xffffffff (uint32)');
         }
         if (value < 0) {
-          throw new Error("value must be >= 0 (uint32)");
+          throw new Error('value must be >= 0 (uint32)');
         }
         remaining_len = numBits;
         results = [];
@@ -252,7 +252,7 @@ const logger = require("./logger");
       read_bytes(len, suppress_boundary_warning = 0) {
         var errmsg, range;
         if (this.bit_index !== 0) {
-          throw new Error("read_bytes: bit_index must be 0");
+          throw new Error('read_bytes: bit_index must be 0');
         }
         if (
           !suppress_boundary_warning &&
@@ -288,10 +288,11 @@ const logger = require("./logger");
       read_byte() {
         var value;
         if (this.bit_index === 0) {
-          if (this.byte_index >= this.buf.length) {
-            throw new Error("read_byte error: no more data");
+          if (this.byte_index < this.buf.length) {
+            value = this.buf[this.byte_index++];
+          } else {
+            // throw new Error("read_byte error: no more data");
           }
-          value = this.buf[this.byte_index++];
         } else {
           value = this.read_bits(8);
         }
@@ -303,7 +304,7 @@ const logger = require("./logger");
         if (len === 0) {
           return 0;
         }
-        bit_buf = "";
+        bit_buf = '';
         for (
           i = j = 0, ref = len;
           0 <= ref ? j < ref : j > ref;
@@ -317,7 +318,7 @@ const logger = require("./logger");
       read_bit() {
         var value;
         if (this.byte_index >= this.buf.length) {
-          throw new Error("read_bit error: no more data");
+          throw new Error('read_bit error: no more data');
         }
         value = this.bit(this.bit_index++, this.buf[this.byte_index]);
         if (this.bit_index === 8) {
@@ -392,7 +393,7 @@ const logger = require("./logger");
       get_remaining_bytes() {
         var remainingLen;
         if (this.bit_index !== 0) {
-          console.warn("warning: bits.get_remaining_bytes: bit_index is not 0");
+          console.warn('warning: bits.get_remaining_bytes: bit_index is not 0');
         }
         remainingLen = this.buf.length - this.byte_index;
         if (remainingLen < 0) {
@@ -403,7 +404,7 @@ const logger = require("./logger");
 
       remaining_buffer() {
         if (this.bit_index !== 0) {
-          console.warn("warning: bits.remaining_buffer: bit_index is not 0");
+          console.warn('warning: bits.remaining_buffer: bit_index is not 0');
         }
         return this.buf.slice(this.byte_index);
       }
@@ -473,7 +474,7 @@ const logger = require("./logger");
         var offsetFromStart;
         offsetFromStart = this.buf.length - 1 - offsetFromEnd;
         if (offsetFromStart < 0) {
-          throw new Error("error: last_get_byte_at: index out of range");
+          throw new Error('error: last_get_byte_at: index out of range');
         }
         return this.buf[offsetFromStart];
       }
@@ -500,20 +501,20 @@ const logger = require("./logger");
       marked_bytes() {
         var startIndex;
         if (this.marks == null || this.marks.length === 0) {
-          throw new Error("The buffer has not been marked");
+          throw new Error('The buffer has not been marked');
         }
         startIndex = this.marks.pop();
         return this.buf.slice(startIndex, +(this.byte_index - 1) + 1 || 9e9);
       }
 
       // Returns a null-terminated string
-      get_string(encoding = "utf8") {
+      get_string(encoding = 'utf8') {
         var nullPos, str;
         nullPos = Bits.searchByteInBuffer(this.buf, 0x00, this.byte_index);
         if (nullPos === -1) {
           // logger.log(this.buf.toString());
           // throw new Error("bits.get_string: the string is not null-terminated");
-          logger.warn("bits.get_string: the string is not null-terminated");
+          logger.warn('bits.get_string: the string is not null-terminated');
           return str;
         }
         str = this.buf.slice(this.byte_index, nullPos).toString(encoding);
@@ -522,7 +523,7 @@ const logger = require("./logger");
       }
 
       // Returns a string constructed by a number
-      static uintToString(num, numBytes, encoding = "utf8") {
+      static uintToString(num, numBytes, encoding = 'utf8') {
         var arr, i, j, ref;
         arr = [];
         for (
@@ -539,7 +540,7 @@ const logger = require("./logger");
       // found in the Buffer (buf), or -1 if it is not found.
       static searchByteInBuffer(buf, byte, from_pos = 0) {
         var i, j, ref, ref1;
-        if (!Bits.DISABLE_BUFFER_INDEXOF && typeof buf.indexOf === "function") {
+        if (!Bits.DISABLE_BUFFER_INDEXOF && typeof buf.indexOf === 'function') {
           return buf.indexOf(byte, from_pos);
         } else {
           if (from_pos < 0) {
@@ -651,7 +652,7 @@ const logger = require("./logger");
 
       static toBinary(byte) {
         var binString, i, j;
-        binString = "";
+        binString = '';
         for (i = j = 7; j >= 0; i = --j) {
           binString += (byte >> i) & 0x01;
         }
@@ -669,7 +670,7 @@ const logger = require("./logger");
             logger.log();
             col = 0;
           } else {
-            process.stdout.write(" ");
+            process.stdout.write(' ');
           }
         }
         if (col !== 0) {
@@ -680,20 +681,20 @@ const logger = require("./logger");
       static getHexdump(buffer) {
         var byte, col, dump, endline, j, len1, strline;
         col = 0;
-        strline = "";
-        dump = "";
-        endline = function() {
+        strline = '';
+        dump = '';
+        endline = function () {
           var pad;
-          pad = "  ";
+          pad = '  ';
           while (col < 16) {
-            pad += "  ";
+            pad += '  ';
             if (col % 2 === 0) {
-              pad += " ";
+              pad += ' ';
             }
             col++;
           }
-          dump += pad + strline + "\n";
-          return (strline = "");
+          dump += pad + strline + '\n';
+          return (strline = '');
         };
         for (j = 0, len1 = buffer.length; j < len1; j++) {
           byte = buffer[j];
@@ -701,7 +702,7 @@ const logger = require("./logger");
             // printable char
             strline += String.fromCharCode(byte);
           } else {
-            strline += " ";
+            strline += ' ';
           }
           dump += Bits.zeropad(2, byte.toString(16));
           col++;
@@ -709,7 +710,7 @@ const logger = require("./logger");
             endline();
             col = 0;
           } else if (col % 2 === 0) {
-            dump += " ";
+            dump += ' ';
           }
         }
         if (col !== 0) {
@@ -723,9 +724,9 @@ const logger = require("./logger");
       }
 
       static zeropad(width, num) {
-        num += "";
+        num += '';
         while (num.length < width) {
-          num = "0" + num;
+          num = '0' + num;
         }
         return num;
       }

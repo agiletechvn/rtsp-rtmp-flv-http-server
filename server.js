@@ -1,21 +1,21 @@
-require("v8-compile-cache");
+require('v8-compile-cache');
 
-(function() {
+(function () {
   var Bits, StreamServer, config, logger, streamServer, url;
 
-  url = require("url");
+  url = require('url');
 
-  config = require("./config");
+  config = require('./config');
 
-  StreamServer = require("./stream_server");
+  StreamServer = require('./stream_server');
 
-  Bits = require("./bits");
+  Bits = require('./bits');
 
-  logger = require("./logger");
+  logger = require('./logger');
 
   Bits.set_warning_fatal(true);
 
-  logger.setLevel(logger[`LEVEL_${process.env.LOG_LEVEL || "OFF"}`]);
+  logger.setLevel(logger[config.logLevel]);
 
   streamServer = new StreamServer();
 
@@ -29,14 +29,14 @@ require("v8-compile-cache");
   //    isAuthenticated = true
 
   //  callback null, isAuthenticated
-  streamServer.setLivePathConsumer(function(uri, callback) {
+  streamServer.setLivePathConsumer(function (uri, callback) {
     var isAuthorized, pathname, ref;
     pathname = (ref = url.parse(uri).pathname) != null ? ref.slice(1) : void 0;
     isAuthorized = true;
     if (isAuthorized) {
       return callback(null); // Accept access
     } else {
-      return callback(new Error("Unauthorized access")); // Deny access
+      return callback(new Error('Unauthorized access')); // Deny access
     }
   });
 
@@ -44,14 +44,14 @@ require("v8-compile-cache");
     streamServer.attachRecordedDir(config.recordedDir);
   }
 
-  process.on("SIGINT", () => {
-    logger.log("Got SIGINT");
-    return streamServer.stop(function() {
-      return process.kill(process.pid, "SIGTERM");
+  process.on('SIGINT', () => {
+    logger.log('Got SIGINT');
+    return streamServer.stop(function () {
+      return process.kill(process.pid, 'SIGTERM');
     });
   });
 
-  process.on("uncaughtException", function(err) {
+  process.on('uncaughtException', function (err) {
     streamServer.stop();
     throw err;
   });

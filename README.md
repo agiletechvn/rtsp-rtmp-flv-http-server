@@ -35,16 +35,16 @@ If you would prefer building and executing this code in a docker container, you 
     $  make build
     $  make console
 
-You may also want to use just `make run` to run the container as a daemon.  If you fiddle with the ports, you'll need to update the values in the Makefile as well to expose the desired ports to your system.
+You may also want to use just `make run` to run the container as a daemon. If you fiddle with the ports, you'll need to update the values in the Makefile as well to expose the desired ports to your system.
 
 ### Serving MP4 files as recorded streams
 
 MP4 files in `file` directory will be accessible at either:
 
-- rtsp://localhost:80/file/FILENAME
-- rtmp://localhost/file/mp4:FILENAME
+- rtsp://localhost/file/FILENAME
+- rtmp://localhost/file/FILENAME
 
-For example, file/video.mp4 is available at rtmp://localhost/file/mp4:video.mp4
+For example, file/video.mp4 is available at rtmp://localhost/file/video.mp4
 
 ### Publishing live streams
 
@@ -54,7 +54,7 @@ Flash Media Live Encoder is a free live encoder from Adobe.
 
 In the Encoding Options panel, check "Stream to Flash Media Server" and set the URL to:
 
-- **FMS URL**:  rtmp://localhost/live
+- **FMS URL**: rtmp://localhost/live
 - **Backup URL**: (blank)
 - **Stream**: STREAM_NAME (whatever name you would like)
 
@@ -95,11 +95,11 @@ For an MP4 file with H.264 video and AAC audio:
 
 Replace `input.mp4` with live audio/video sources.
 
-For an RTSP source (at rtsp://192.168.1.1:5000/video1  in this example):
+For an RTSP source (at rtsp://192.168.1.1:5000/video1 in this example):
 
     $ gst-launch-0.10 rtspsrc location=rtsp://192.168.1.1:5000/video1 ! decodebin ! \
         x264enc bitrate=256 tune=zerolatency  ! h264parse ! flvmux name=mux streamable=true ! \
-        queue ! rtmpsink location='rtmp://localhost/live/STREAM_NAME' 
+        queue ! rtmpsink location='rtmp://localhost/live/STREAM_NAME'
 
 ### Accessing the live stream
 

@@ -2,20 +2,48 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>List of streams</title>
+  <title>List of streams</title>  
 </head>
 <body>
-<div id="page" style="margin:20px;width:600px">
-  <h2>List of streams</h2>
-  <% if (files.length > 0) { -%>
-    <ol>
-    <% for (var i=0, l=files.length; i<l; i++) { -%>
-      <li>
-        <input style="width:100%" type="text"  onclick="this.select();" value="<%= files[i] %>" />
-      </li>
+<div style="display:flex;justify-content: space-between;">
+  <div style="width:50%">
+    <h2>List of streams</h2>
+    <% if (files.length > 0) { -%>
+      <ol>
+      <% for (var i=0, l=files.length; i<l; i++) { -%>
+        <li style="display:flex">
+          <input style="width:100%" type="text"  onclick="this.select();" value="<%= files[i] %>" />
+          <button onclick="transcribe('<%= files[i] %>')">transcribe</button>
+        </li>
+      <% } -%>
+      </ol>
     <% } -%>
-    </ol>
-  <% } -%>
+  </div>
+  <div style="width:50%">
+    <h2>Transcription</h2>
+    <div id="ret" style="flex:1"></div> 
+  </div>
+  
 </div>
+<script>
+  let socket;
+  function transcribe(input) {
+    const match = input.match(/:\/\/([^/:]+)/);
+    if(!match) return;
+    const url = `ws://${match[1]}/transcript/${encodeURIComponent(
+      input
+    )}`;
+    // close old socket
+    if(socket && socket.readyState < 2) {
+      socket.close();
+    }
+    socket = new WebSocket(url);
+    document.querySelector('#ret').innerHTML = 'Transcribing ' + input;
+    socket.addEventListener('message', function (event) {
+      console.log('Message from server ', event.data);
+      document.querySelector('#ret').innerHTML = event.data;
+    });
+  }
+</script>
 </body>
 </html>
