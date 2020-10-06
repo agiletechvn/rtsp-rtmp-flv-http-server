@@ -67,6 +67,8 @@
     'Dec'
   ];
 
+  const hlsReg = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
+
   zeropad = function (width, num) {
     num += '';
     while (num.length < width) {
@@ -80,6 +82,7 @@
       this.recordedDir = opts.recordedDir;
       this.rtspBase = opts.rtspBase;
       this.rtmpBase = opts.rtmpBase;
+      this.serverAddress = opts.serverAddress;
       var ref, ref1;
       this.serverName =
         (ref = opts != null ? opts.serverName : void 0) != null
@@ -94,10 +97,24 @@
     setServerName(name) {
       return (this.serverName = name);
     }
+    readHls(file) {
+      const content = fs.readFileSync(file).toString();
+      return content.match(hlsReg).filter((url) => url.endsWith('.m3u8'));
+    }
 
-    readFiles(file, type) {
+    readFiles(filePath, type) {
+      if (type === 'hls') {
+        return Array.prototype.concat.apply(
+          [],
+          fs
+            .readdirSync(filePath)
+            .filter((file) => file.endsWith('.m3u8'))
+            .map((file) => this.readHls(path.join(filePath, file)))
+        );
+      }
+
       return fs
-        .readdirSync(file)
+        .readdirSync(filePath)
         .filter((file) => file.endsWith('.mp4'))
         .map(
           (file) => `${type === 'rtsp' ? this.rtspBase : this.rtmpBase}/${file}`
@@ -116,6 +133,7 @@
         return this.respondText('pong', req, callback);
       } else if (pathname === '/list') {
         opts = {
+          serverAddress: this.serverAddress,
           files: this.readFiles(this.recordedDir, query.type)
         };
         return fs.readFile(

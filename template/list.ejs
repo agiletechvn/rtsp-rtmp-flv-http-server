@@ -26,11 +26,12 @@
   
 </div>
 <script>
+  const serverAddress = '<%= serverAddress %>';
   let socket;
   function transcribe(input) {
-    const match = input.match(/:\/\/([^/:]+)/);
-    if(!match) return;
-    const url = `ws://${match[1]}/transcript/${encodeURIComponent(
+    // const match = input.match(/:\/\/([^/:]+)/);
+    // if(!match) return;
+    const url = `ws://${serverAddress}/transcript/${encodeURIComponent(
       input
     )}`;
     // close old socket
@@ -38,10 +39,10 @@
       socket.close();
     }
     socket = new WebSocket(url);
-    document.querySelector('#ret').innerHTML = 'Transcribing ' + input;
+    document.querySelector('#ret').innerHTML = 'Transcribing ' + input + '<br/><br/>';
     socket.addEventListener('message', function (event) {
       console.log('Message from server ', event.data);
-      document.querySelector('#ret').innerHTML = event.data;
+      document.querySelector('#ret').innerHTML += event.data + '<br/><br/>';
     });
   }
 </script>

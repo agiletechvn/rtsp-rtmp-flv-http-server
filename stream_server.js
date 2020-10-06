@@ -135,13 +135,18 @@
       }
       if (config.enableHTTP) {
         const nets = networkInterfaces();
-        const eth0 = nets['eth0'].find(
-          (net) => net.family === 'IPv4' && !net.internal
-        );
-        const serverAddress = eth0 ? eth0.address : 'localhost';
+        let serverAddress = 'localhost';
+        const eth0 = nets['eth0'] || nets['en0'];
+        if (eth0) {
+          const net = eth0.find(
+            (net) => net.family === 'IPv4' && !net.internal
+          );
+          if (net) serverAddress = net.address;
+        }
 
         this.httpHandler = new http.HTTPHandler({
           serverName: this.serverName,
+          serverAddress: serverAddress,
           recordedDir: config.recordedDir,
           rtspBase: `rtsp://${serverAddress}:${config.serverPort}/${config.recordedApplicationName}`,
           rtmpBase: `rtmp://${serverAddress}:${config.rtmpServerPort}/${config.recordedApplicationName}`,
