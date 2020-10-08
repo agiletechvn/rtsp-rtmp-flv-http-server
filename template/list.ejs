@@ -5,7 +5,28 @@
   <title>List of streams</title>  
 </head>
 <body>
+   <div style="width:50%">
+    <h2>Language</h2>
+    <div style="padding: 10;">
+      <select id="language">
+        <option value="en-US" selected="selected">English</option>
+        <option value="FR" >French</option>
+        <option value="IT">Italian</option>
+        <option value="JA">Japanese</option>
+        <option value="ES">Spanish</option>
+        <option value="NL">Dutch</option>
+        <option value="PL">Polish</option>
+        <option value="PT">Portuguese</option>
+        <option value="RU">Russian</option>
+        <option value="ZH">Chinese</option>
+      </select>
+    </div>
+   
+  </div>
+  
 <div style="display:flex;justify-content: space-between;">
+
+  
   <div style="width:50%">
     <h2>List of streams</h2>
     <% if (files.length > 0) { -%>
@@ -31,13 +52,16 @@
   function transcribe(input) {
     // const match = input.match(/:\/\/([^/:]+)/);
     // if(!match) return;
+    const e = document.getElementById("language");
+    const languageCode = e.options[e.selectedIndex].value;
     const url = `ws://${serverAddress}/transcript/${encodeURIComponent(
       input
-    )}`;
+    )}?languageCode=${languageCode}`;
     // close old socket
     if(socket && socket.readyState < 2) {
       socket.close();
     }
+    
     socket = new WebSocket(url);
     document.querySelector('#ret').innerHTML = 'Transcribing ' + input + '<br/><br/>';
     socket.addEventListener('message', function (event) {
