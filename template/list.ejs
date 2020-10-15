@@ -2,13 +2,16 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <title>List of streams</title>  
 </head>
 <body>
    <div style="width:50%">
     <h2>Language</h2>
     <div style="padding: 10;">
-      <select id="language">
+      <select id="language" onchange="onChangeLanguage()">
         <option value="en-US" selected="selected">English</option>
         <option value="FR" >French</option>
         <option value="IT">Italian</option>
@@ -33,8 +36,8 @@
       <ol>
       <% for (var i=0, l=files.length; i<l; i++) { -%>
         <li style="display:flex">
-          <input style="width:100%" type="text"  onclick="this.select();" value="<%= files[i] %>" />
-          <button onclick="transcribe('<%= files[i] %>')">transcribe</button>
+          <input style="width:100%" type="text" id="text_<%= i%>"  onclick="this.select();" value="<%= files[i] %>" />
+          <button class="btn" id="transcribe_<%= i%>">transcribe</button>
         </li>
       <% } -%>
       </ol>
@@ -49,11 +52,39 @@
 <script>
   const serverAddress = '<%= serverAddress %>';
   let socket;
-  function transcribe(input) {
-    // const match = input.match(/:\/\/([^/:]+)/);
-    // if(!match) return;
-    const e = document.getElementById("language");
-    const languageCode = e.options[e.selectedIndex].value;
+  let inp = ""
+  // function transcribe() {
+
+  //   inp = input
+  //   // const match = input.match(/:\/\/([^/:]+)/);
+  //   // if(!match) return;
+    
+  // }
+
+  // fix change language 
+  function onChangeLanguage(){
+    console.log("inp: ", inp)
+    const language = document.getElementById("language").value;
+    if (inp!==""){
+      const url = `ws://${serverAddress}/transcript/${encodeURIComponent(
+        inp
+    )}?languageCode=${language}`;
+    socket = new WebSocket(url);
+    socket.addEventListener('message', function (event) {
+      console.log('Message from server ', event.data);
+      document.querySelector('#ret').innerHTML += event.data + '<br/><br/>';
+    });
+    }
+  }
+  $(function () {
+  $(document).on("click", ".btn", function(e){
+    console.log(e)
+    let id = e.target.id;
+    console.log(id)
+    let index = id.split("_")[1]
+    let input = $(`#text_${index}`).val();
+    inp = input
+    const languageCode = document.getElementById("language").value;
     const url = `ws://${serverAddress}/transcript/${encodeURIComponent(
       input
     )}?languageCode=${languageCode}`;
@@ -68,7 +99,7 @@
       console.log('Message from server ', event.data);
       document.querySelector('#ret').innerHTML += event.data + '<br/><br/>';
     });
-  }
+  })})
 </script>
 </body>
 </html>
